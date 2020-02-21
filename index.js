@@ -15,7 +15,7 @@ prog
   .command('star', 'Star an application')
   .argument('<repo>', 'repo', prog.STRING)
   .action(async (args, options, logger) => {
-    const [owner, repo] = args.repo.split('/');
+    const [owner,repo] = args.repo.split('/');
     try{
         await octokit.activity.starRepo({
         owner,
@@ -25,6 +25,29 @@ prog
     } catch(e) {
         console.log('error: ', e)
     }
-  });
+  })
+
+  .command('prl', 'List of pull request')
+  .argument('<repo>', 'repo', prog.STRING)
+  .action(async (args, options, logger) => {
+    const [owner,repo] = args.repo.split('/');
+    console.log(owner)
+    console.log(repo)
+    try{
+        const prs = await octokit.pulls.list({
+        owner,
+        repo
+      });
+      
+      console.log(JSON.stringify(prs.data.map(({number, state, title}) => ({
+        title,
+        state,
+        number
+       })), null, 2))
+
+    } catch(e) {
+        console.log('error: ', e)
+    }
+  })
  
 prog.parse(process.argv);
